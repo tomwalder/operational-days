@@ -1,7 +1,9 @@
 <?php
 
 /**
- * OperationalDaysInterface
+ * OperationalDaysEnum
+ *
+ * Enumerates various OperationalDays related constants, in particular bitmask values
  */
 interface OperationalDaysEnum {
     const

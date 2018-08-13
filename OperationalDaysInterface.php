@@ -32,5 +32,6 @@ interface OperationalDaysInterface {
      * @return DateTimeInterface
      */
     public function getOperationalDateRangeEnd();
+
 }
 

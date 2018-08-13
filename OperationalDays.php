@@ -7,95 +7,36 @@
  */
 class OperationalDays implements OperationalDaysInterface {
 
-  const IDX_FORMAT = 'Ymd';
+    protected
+        $obj_date_since                     = null,
+        $obj_date_until                     = null,
+        $int_weekly_bitmask                 = OperationalDaysEnum::BF_ALL,
+        $arr_specific_operational_dates     = [],
+        $arr_specific_non_operational_dates = []    
+    ;
 
-  private
-    $int_weekly_bitmask                 = self::BF_ALL,
-    $arr_specific_operational_dates     = [],
-    $arr_specific_non_operational_dates = []
-  ;
-
-  /**
-   * @implements OperationalDaysInterface::isOperational(DateTimeInterface $obj_date)
-   */
-  public function isOperational(DateTimeInterface $obj_date) {
-    $str_idx = $this->dateToIndex($obj_date);
-    if (isset($this->arr_specific_operational_days[$str_idx])) {
-       return true;
+    /**
+     * @implements OperationalDaysInterface::isOperationalDate(DateTimeInterface $obj_date)
+     */
+    public function isOperationalDate(DateTimeInterface $obj_date) {
+        $str_idx = OperationalDaysConfigurator::dateToIndex($obj_date);
+        if (isset($this->arr_specific_operational_days[$str_idx])) {
+            return true;
+        }
+        if (isset($this->specific_non_operational_dates[$str_idx])) {
+            return false;
+        }
+        return (bool)($this->int_weekly_bitmask & OperationalDaysConfigurator::dayOfWeekToBit($obj_date->format('w')));
     }
-    if (isset($this->specific_non_operational_dates[$str_idx])) {
-       return false;
+
+    public function getOperationalDateRangeStart() {
+        return $this->obj_date_since;
     }
-    return (bool)($this->int_weekly_bitmask & (1 << (int)$obj_date->format('w')));
-  }
 
-  /**
-   * @implements OperationalDaysInterface::setOperationalDate(DateTimeInterface $obj_date)
-   */
-  public function setOperationalDate(DateTimeInterface $obj_date) {
-    $this->arr_specific_operational_dates[$this->dateToIndex($obj_date)] = true;
-    return $this;
-  }
+    public function getOperationalDateRangeEnd() {
+        return $this->obj_date_until;
+    }
 
-  /**
-   * @implements OperationalDaysInterface::clearOperationalDate(DateTimeInterface $obj_date)
-   */
-  public function clearOperationalDate(DateTimeInterface $obj_date) {
-    unset($this->arr_specific_operational_dates[$this->dateToIndex($obj_date)]);
-    return $this;
-  }
-
-  /**
-   * @implements OperationalDaysInterface::setNonOperationalDate(DateTimeInterface $obj_date)
-   */
-  public function setNonOperationalDate(DateTimeInterface $obj_date) {
-    $this->arr_specific_non_operational_dates[$this->dateToIndex($obj_date)] = true;
-    return $this;
-  }
-
-  /**
-   * @implements OperationalDaysInterface::clearNonOperationalDate(DateTimeInterface $obj_date)
-   */
-  public function clearNonOperationalDate(DateTimeInterface $obj_date) {
-    unset($this->arr_specific_non_operational_dates[$this->dateToIndex($obj_date)]);
-    return $this;
-  }
-
-  /**
-   * @implements OperationalDaysInterface::setDayOfWeek(DateTimeInterface $obj_date)
-   */
-  public function setDayOfWeek($int_dow) {
-    $this->int_weekly_bitmask |= $this->dowToBit($int_dow);
-    return $this;
-  }
-
-  /**
-   * @implements OperationalDaysInterface::clearDayOfWeek(DateTimeInterface $obj_date)
-   */
-  public function clearDayOfWeek($int_dow) {
-    $this->int_weekly_bitmask &= ~$this->dowToBit($int_dow);
-    return $this;
-  }
-
-  /**
-   * Convert a DateTimeInterface into an index for array lookup.
-   *
-   * @param DateTimeInterface $obj_date
-   * @return string
-   */
-  private function dateToIndex(DateTimeInterface $obj_date) {
-    return $obj_date->format(self::IDX_FORMAT);
-  }
-
-  /**
-   * Convert an enumerated day of week into a bitfield value.
-   *
-   * @param int $int_dow
-   * @return int
-   */
-  private function dowToBit($int_dow) {
-    return (1 << $int_dow) & self::BF_ALL;
-  }
 }
 
 
