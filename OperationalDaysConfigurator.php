@@ -8,7 +8,7 @@
  *
  *
  */
-abstract class OperationalDaysConfigurator extends OperationalDays {
+final class OperationalDaysConfigurator extends OperationalDays {
 
     const IDX_FORMAT = 'Ymd'; 
 
@@ -33,8 +33,8 @@ abstract class OperationalDaysConfigurator extends OperationalDays {
         $obj_operational_days->obj_date_since     = $this->obj_date_since;
         $obj_operational_days->obj_date_until     = $this->obj_date_until;
         $obj_operational_days->int_weekly_bitmask = $this->int_weekly_bitmask;
-        $this->arr_specific_operational_dates     = $this->arr_specific_operational_dates;
-        $this->arr_specific_non_operational_dates = $this->arr_specific_non_operational_dates;
+        $obj_operational_days->arr_specific_operational_dates     = $this->arr_specific_operational_dates;
+        $obj_operational_days->arr_specific_non_operational_dates = $this->arr_specific_non_operational_dates;
         return $obj_operational_days;
     }
 
@@ -90,7 +90,7 @@ abstract class OperationalDaysConfigurator extends OperationalDays {
         if ($int_weekly_bitmask & ~OperationalDaysEnum::BF_ALL) {
             throw new InvalidArgumentException("Invalid mask specification ". $int_mask);
         }
-        $this->int_weekly_bitmask = int_weekly_bitmask;
+        $this->int_weekly_bitmask = $int_weekly_bitmask;
         return $this;
     }
 
@@ -99,7 +99,7 @@ abstract class OperationalDaysConfigurator extends OperationalDays {
         foreach ($arr_dates as $mix_date) {
             if ($mix_date instanceof DateTimeInterface) {
                 $this->addOperationalDate($mix_date);
-            } else (
+            } else {
                 $this->addOperationalDate(new DateTimeImmutable($mix_date));
             }
         }
@@ -111,7 +111,7 @@ abstract class OperationalDaysConfigurator extends OperationalDays {
         foreach ($arr_dates as $mix_date) {
             if ($mix_date instanceof DateTimeInterface) {
                 $this->addNonOperationalDate($mix_date);
-            } else (
+            } else {
                 $this->addNonOperationalDate(new DateTimeImmutable($mix_date));
             }
         }
