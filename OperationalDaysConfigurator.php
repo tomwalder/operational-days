@@ -58,6 +58,7 @@ final class OperationalDaysConfigurator extends OperationalDays {
      */
     public static function dateToIndex(DateTimeInterface $obj_date) {
         return $obj_date->format(self::IDX_FORMAT);
+        //return pack('V', $obj_date->format(self::IDX_FORMAT));
     }
 
     /**
@@ -85,7 +86,7 @@ final class OperationalDaysConfigurator extends OperationalDays {
      * @return $this
      * @throws InvalidArgumentException - raised if the bitmask contains any undefined bits.
      */
-    public function setWeeklyBitMask($int_weekly_bitmask) {
+    public function setRecurrantWeeklyPattern($int_weekly_bitmask) {
         $int_weekly_bitmask = (int)$int_weekly_bitmask;
         if ($int_weekly_bitmask & ~OperationalDaysEnum::BF_ALL) {
             throw new InvalidArgumentException("Invalid mask specification ". $int_mask);
@@ -94,8 +95,24 @@ final class OperationalDaysConfigurator extends OperationalDays {
         return $this;
     }
 
-    public function setOperationalDates(array $arr_dates) {
-        $this->arr_specific_operational_dates = [];
+    public function setRecurrantDay($int_dow) {
+
+    }
+
+    /**
+     * Sets the specific operational dates array, optionally clearing out any existing definitions. Accepts an array
+     * of DateTimeInterface implementors or string values that can be coerced into DateTimeImmutable instances. The
+     * string use case is to satisfy loading values out of persistent storage.
+     *
+     * @param DateTimeInterface|string[] $arr_dates
+     * @param bool $bol_reset
+     * @return $this
+     * @throws InvalidArgumentException - raised by the construction of DateTimeImmutable from an unsupported input.
+     */
+    public function setOperationalDates(array $arr_dates, $bol_reset = false) {
+        if ($bol_reset) {
+            $this->arr_specific_operational_dates = [];
+        }
         foreach ($arr_dates as $mix_date) {
             if ($mix_date instanceof DateTimeInterface) {
                 $this->addOperationalDate($mix_date);
@@ -106,8 +123,20 @@ final class OperationalDaysConfigurator extends OperationalDays {
         return $this;
     }
 
-    public function setNonOperationalDates(array $arr_dates) {
-        $this->arr_specific_non_operational_dates = [];
+    /**
+     * Sets the specific non operational dates array, optionally clearing out any existing definitions. Accepts an array
+     * of DateTimeInterface implementors or string values that can be coerced into DateTimeImmutable instances. The
+     * string use case is to satisfy loading values out of persistent storage.
+     *
+     * @param DateTimeInterface|string[] $arr_dates
+     * @param bool $bol_reset
+     * @return $this
+     * @throws InvalidArgumentException - raised by the construction of DateTimeImmutable from an unsupported input.
+     */
+    public function setNonOperationalDates(array $arr_dates, $bol_reset = false) {
+        if ($bol_reset) {
+            $this->arr_specific_non_operational_dates = [];
+        }
         foreach ($arr_dates as $mix_date) {
             if ($mix_date instanceof DateTimeInterface) {
                 $this->addNonOperationalDate($mix_date);
@@ -118,11 +147,23 @@ final class OperationalDaysConfigurator extends OperationalDays {
         return $this;
     }
 
+    /**
+     * Adds a single specific operational date
+     *
+     * @param DateTimeInterface $obj_date
+     * @return $this
+     */
     public function addOperationalDate(DateTimeInterface $obj_date) {
         $this->arr_specific_operational_dates[self::dateToIndex($obj_date)] = true;
         return $this;
     }
 
+    /**
+     * Adds a single specific non-operational date
+     *
+     * @param DateTimeInterface $obj_date
+     * @return $this
+     */
     public function addNonOperationalDate(DateTimeInterface $obj_date) {
         $this->arr_specific_non_operational_dates[self::dateToIndex($obj_date)] = true;
         return $this;

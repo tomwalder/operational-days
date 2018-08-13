@@ -20,10 +20,10 @@ class OperationalDays implements OperationalDaysInterface {
      */
     public function isOperationalDate(DateTimeInterface $obj_date) {
         $str_idx = OperationalDaysConfigurator::dateToIndex($obj_date);
-        if (isset($this->arr_specific_operational_days[$str_idx])) {
+        if (isset($this->arr_specific_operational_dates[$str_idx])) {
             return true;
         }
-        if (isset($this->specific_non_operational_dates[$str_idx])) {
+        if (isset($this->arr_specific_non_operational_dates[$str_idx])) {
             return false;
         }
         return (bool)($this->int_weekly_bitmask & OperationalDaysConfigurator::dayOfWeekToBit($obj_date->format('w')));
