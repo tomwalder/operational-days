@@ -47,7 +47,7 @@ interface OperationalDaysConfiguratorInterface {
      * @return $this
      * @throws InvalidArgumentException - raised by the construction of DateTimeImmutable from an unsupported input.
      */
-    public function setOperationalDates(array $arr_dates, $bol_reset = false);
+    public function setSpecificOperationalDates(array $arr_dates, $bol_reset = false);
 
     /**
      * Sets the specific non operational dates array, optionally clearing out any existing definitions. Accepts an array
@@ -59,7 +59,7 @@ interface OperationalDaysConfiguratorInterface {
      * @return $this
      * @throws InvalidArgumentException - raised by the construction of DateTimeImmutable from an unsupported input.
      */
-    public function setNonOperationalDates(array $arr_dates, $bol_reset = false);
+    public function setSpecificNonOperationalDates(array $arr_dates, $bol_reset = false);
 
     /**
      * Adds a single specific operational date
@@ -67,7 +67,7 @@ interface OperationalDaysConfiguratorInterface {
      * @param DateTimeInterface $obj_date
      * @return $this
      */
-    public function addOperationalDate(DateTimeInterface $obj_date);
+    public function addSpecificOperationalDate(DateTimeInterface $obj_date);
 
     /**
      * Adds a single specific non-operational date
@@ -75,7 +75,7 @@ interface OperationalDaysConfiguratorInterface {
      * @param DateTimeInterface $obj_date
      * @return $this
      */
-    public function addNonOperationalDate(DateTimeInterface $obj_date);
+    public function addSpecificNonOperationalDate(DateTimeInterface $obj_date);
 
     /**
      * Creates a new instance of OperationalDaysInterface from the current configuration.

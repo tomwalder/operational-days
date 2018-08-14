@@ -91,15 +91,15 @@ class SimpleOperationalDaysConfigurator extends SimpleOperationalDays implements
      * @return $this
      * @throws InvalidArgumentException - raised by the construction of DateTimeImmutable from an unsupported input.
      */
-    public function setOperationalDates(array $arr_dates, $bol_reset = false) {
+    public function setSpecificOperationalDates(array $arr_dates, $bol_reset = false) {
         if ($bol_reset) {
             $this->arr_specific_operational_dates = [];
         }
         foreach ($arr_dates as $mix_date) {
             if ($mix_date instanceof DateTimeInterface) {
-                $this->addOperationalDate($mix_date);
+                $this->addSpecificOperationalDate($mix_date);
             } else {
-                $this->addOperationalDate(new DateTimeImmutable($mix_date));
+                $this->addSpecificOperationalDate(new DateTimeImmutable($mix_date));
             }
         }
         return $this;
@@ -115,15 +115,15 @@ class SimpleOperationalDaysConfigurator extends SimpleOperationalDays implements
      * @return $this
      * @throws InvalidArgumentException - raised by the construction of DateTimeImmutable from an unsupported input.
      */
-    public function setNonOperationalDates(array $arr_dates, $bol_reset = false) {
+    public function setSpecificNonOperationalDates(array $arr_dates, $bol_reset = false) {
         if ($bol_reset) {
             $this->arr_specific_non_operational_dates = [];
         }
         foreach ($arr_dates as $mix_date) {
             if ($mix_date instanceof DateTimeInterface) {
-                $this->addNonOperationalDate($mix_date);
+                $this->addSpecificNonOperationalDate($mix_date);
             } else {
-                $this->addNonOperationalDate(new DateTimeImmutable($mix_date));
+                $this->addSpecificNonOperationalDate(new DateTimeImmutable($mix_date));
             }
         }
         return $this;
@@ -135,7 +135,7 @@ class SimpleOperationalDaysConfigurator extends SimpleOperationalDays implements
      * @param DateTimeInterface $obj_date
      * @return $this
      */
-    public function addOperationalDate(DateTimeInterface $obj_date) {
+    public function addSpecificOperationalDate(DateTimeInterface $obj_date) {
         $this->arr_specific_operational_dates[self::dateToIndex($obj_date)] = true;
         return $this;
     }
@@ -146,7 +146,7 @@ class SimpleOperationalDaysConfigurator extends SimpleOperationalDays implements
      * @param DateTimeInterface $obj_date
      * @return $this
      */
-    public function addNonOperationalDate(DateTimeInterface $obj_date) {
+    public function addSpecificNonOperationalDate(DateTimeInterface $obj_date) {
         $this->arr_specific_non_operational_dates[self::dateToIndex($obj_date)] = true;
         return $this;
     }

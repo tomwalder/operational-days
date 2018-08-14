@@ -28,12 +28,12 @@ class FakeWarehouseThatWorksMonToSat implements HasOperationalDaysInterface {
             ->setRecurrentWeeklyPattern(
                 OperationalDaysEnum::BF_WEEKDAY|OperationalDaysEnum::BF_SAT
             )
-            ->setNonOperationalDates([
+            ->setSpecificNonOperationalDates([
                 '2018-08-29',
                 new DateTimeImmutable('2018-12-25'),
                 'next wednesday + 7 days'
             ])
-            ->addOperationalDate(new DateTimeImmutable('next sunday + 7 days'))
+            ->addSpecificOperationalDate(new DateTimeImmutable('next sunday + 7 days'))
             ->create();
     }
 }
