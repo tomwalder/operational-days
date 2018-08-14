@@ -13,7 +13,7 @@ interface HasOperationalDaysInterface {
      * @param DateTimeInterface $obj_since - If null, today is assumed
      * @return OperationalDaysInterface 
      *
-     * @throws InvalidArgumentException - Raised if the date range is inverted.
+     * @throws RangeException - Raised if the date range is inverted.
      */
     public function getOperationalDays(DateTimeInterface $obj_until, DateTimeInterface $obj_since = null);
 }

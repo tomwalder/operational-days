@@ -1,14 +1,14 @@
 <?php
 /**
- * OperationalDaysConfigurator.
+ * SimpleOperationalDaysConfigurator.
  *
  * Implemented as "friend" by extension
  *
- * Implements a fluent factory for creating immutable OperationalDays instances:
+ * Implements a fluent factory for creating immutable SimpleOperationalDays instances:
  *
  *
  */
-final class OperationalDaysConfigurator extends OperationalDays {
+class SimpleOperationalDaysConfigurator extends SimpleOperationalDays implements OperationalDaysConfiguratorInterface {
 
     const IDX_FORMAT = 'Ymd'; 
 
@@ -24,41 +24,27 @@ final class OperationalDaysConfigurator extends OperationalDays {
     }
 
     /**
-     * Creates a new instance of OperationalDays from the current configuration.
+     * Take an existing SimpleOperationalDays instance and use it prepopulate this configurator.
      *
-     * @return OperationalDays
+     * @param DateTimeInterface $obj_date_until
+     * @param DateTimeInterface $obj_date_since - if null, assumes today.
+     * @return $this
      */
-    public function create() {
-        $obj_operational_days                     = new OperationalDays();
-        $obj_operational_days->obj_date_since     = $this->obj_date_since;
-        $obj_operational_days->obj_date_until     = $this->obj_date_until;
-        $obj_operational_days->int_weekly_bitmask = $this->int_weekly_bitmask;
-        $obj_operational_days->arr_specific_operational_dates     = $this->arr_specific_operational_dates;
-        $obj_operational_days->arr_specific_non_operational_dates = $this->arr_specific_non_operational_dates;
-        return $obj_operational_days;
-    }
-
-    /**
-     * Convert a Day Of Week enumerated constant to it's corresponding bitmask value. The returned bitmask
-     * will be zero for any input not strictly in the enumerated set.
-     *
-     * @param int $int_dow
-     * @return int
-     */
-    public static function dayOfWeekToBit($int_dow) {
-        return (1 << $int_dow) & OperationalDaysEnum::BF_ALL;
-    }
-
-    /**
-     * Convert a DateTimeInterface implementor into a key index format used by OperationalDays internally.
-     * Do not assume anything about the returned value beyond it's type.
-     *
-     * @param DateTimeInterface $obj_date
-     * @return string
-     */
-    public static function dateToIndex(DateTimeInterface $obj_date) {
-        return $obj_date->format(self::IDX_FORMAT);
-        //return pack('V', $obj_date->format(self::IDX_FORMAT));
+    public function startingWith(OperationalDaysInterface $obj_input) {
+        if ($obj_input instanceof SimpleOperationalDays) {
+            $this->obj_date_since     = $obj_input->obj_date_since;
+            $this->obj_date_until     = $obj_input->obj_date_until;
+            $this->int_weekly_bitmask = $obj_input->int_weekly_bitmask;
+            $this->arr_specific_operational_dates     = $obj_input->arr_specific_operational_dates;
+            $this->arr_specific_non_operational_dates = $obj_input->arr_specific_non_operational_dates;
+        } else {
+            $this->obj_date_since = $obj_input->getDateRangeStart();
+            $this->obj_date_until = $obj_input->getDateRangeEnd();
+            $this->int_weekly_bitmask = $obj_input->getRecurrentWeeklyPattern();
+            $this->setOperationalDates($obj_input->getSpecificOperationalDates(), true);
+            $this->setNosnOperationalDates($obj_input->getSpecificNonOperationalDates(), true);
+        }
+        return $this;
     }
 
     /**
@@ -86,17 +72,13 @@ final class OperationalDaysConfigurator extends OperationalDays {
      * @return $this
      * @throws InvalidArgumentException - raised if the bitmask contains any undefined bits.
      */
-    public function setRecurrantWeeklyPattern($int_weekly_bitmask) {
+    public function setRecurrentWeeklyPattern($int_weekly_bitmask) {
         $int_weekly_bitmask = (int)$int_weekly_bitmask;
         if ($int_weekly_bitmask & ~OperationalDaysEnum::BF_ALL) {
             throw new InvalidArgumentException("Invalid mask specification ". $int_mask);
         }
         $this->int_weekly_bitmask = $int_weekly_bitmask;
         return $this;
-    }
-
-    public function setRecurrantDay($int_dow) {
-
     }
 
     /**
@@ -169,5 +151,42 @@ final class OperationalDaysConfigurator extends OperationalDays {
         return $this;
     }
 
+    /**
+     * Creates a new instance of OperationalDays from the current configuration.
+     *
+     * @return OperationalDays
+     */
+    public function create() {
+        $obj_operational_days                     = new SimpleOperationalDays();
+        $obj_operational_days->obj_date_since     = $this->obj_date_since;
+        $obj_operational_days->obj_date_until     = $this->obj_date_until;
+        $obj_operational_days->int_weekly_bitmask = $this->int_weekly_bitmask;
+        $obj_operational_days->arr_specific_operational_dates     = $this->arr_specific_operational_dates;
+        $obj_operational_days->arr_specific_non_operational_dates = $this->arr_specific_non_operational_dates;
+        return $obj_operational_days;
+    }
+
+    /**
+     * Convert a Day Of Week enumerated constant to it's corresponding bitmask value. The returned bitmask
+     * will be zero for any input not strictly in the enumerated set.
+     *
+     * @param int $int_dow
+     * @return int
+     */
+    public static function dayOfWeekToBit($int_dow) {
+        return (1 << $int_dow) & OperationalDaysEnum::BF_ALL;
+    }
+
+    /**
+     * Convert a DateTimeInterface implementor into a key index format used by OperationalDays internally.
+     * Do not assume anything about the returned value beyond it's type.
+     *
+     * @param DateTimeInterface $obj_date
+     * @return string
+     */
+    public static function dateToIndex(DateTimeInterface $obj_date) {
+        return $obj_date->format(self::IDX_FORMAT);
+        //return pack('V', $obj_date->format(self::IDX_FORMAT));
+    }
 }
 

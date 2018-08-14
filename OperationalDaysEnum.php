@@ -30,7 +30,15 @@ interface OperationalDaysEnum {
         BF_SAT     =  64,
         BF_WEEKDAY =  62,
         BF_WEEKEND =  65,
-        BF_ALL     = 127
+        BF_ALL     = 127,
+
+        /**
+         * Enumerated type of day.
+         */
+        TYPE_RECURRENT_NON_OPERATIONAL = 0,
+        TYPE_RECURRENT_OPERATIONAL     = 1,
+        TYPE_SPECIFIC_NON_OPERATIONAL  = 2,
+        TYPE_SPECIFIC_OPERATIONAL      = 3
     ;
 }
 

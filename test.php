@@ -9,22 +9,23 @@ array_map(
     }, [
     'OperationalDaysEnum',
     'OperationalDaysInterface',
-    'OperationalDays',
-    'OperationalDaysConfigurator',
+    'OperationalDaysConfiguratorInterface',
     'HasOperationalDaysInterface',
+    'SimpleOperationalDays',
+    'SimpleOperationalDaysConfigurator',
 ]);
 
 // Example
 
-class FakeWarehouse implements HasOperationalDaysInterface {
+class FakeWarehouseThatWorksMonToSat implements HasOperationalDaysInterface {
 
     /**
      * @implements HasOperationalDaysInterface::getOperationalDays()
      */
     public function getOperationalDays(DateTimeInterface $obj_until, DateTimeInterface $obj_since = null) {
-        return OperationalDaysConfigurator::get()
+        return SimpleOperationalDaysConfigurator::get()
             ->setDateRange($obj_until, $obj_since)
-            ->setRecurrantWeeklyPattern(
+            ->setRecurrentWeeklyPattern(
                 OperationalDaysEnum::BF_WEEKDAY|OperationalDaysEnum::BF_SAT
             )
             ->setNonOperationalDates([
@@ -37,7 +38,7 @@ class FakeWarehouse implements HasOperationalDaysInterface {
     }
 }
 
-$obj_warehouse = new FakeWarehouse();
+$obj_warehouse = new FakeWarehouseThatWorksMonToSat();
 $obj_days      = $obj_warehouse->getOperationalDays(new DateTimeImmutable('2019-01-01T00:00:00+00:00'));
 
 print_r($obj_days);
